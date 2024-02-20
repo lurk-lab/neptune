@@ -85,7 +85,7 @@ members = [
 
 # Dependencies that should be kept in sync through the whole workspace
 [workspace.dependencies]
-bellpepper-core = { git = "https://github.com/lurk-lab/bellpepper", branch = "dev", default-features = false }
+bellpepper-core = { version = "0.4.0", default-features = false }
 bellpepper = { git = "https://github.com/lurk-lab/bellpepper", branch = "dev", default-features = false }
 blake2s_simd = "1.0.1"
 blstrs = { version = "0.7.0" }
