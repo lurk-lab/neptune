@@ -16,7 +16,7 @@ blstrs = { workspace = true, optional = true }
 byteorder = { workspace = true }
 ec-gpu = { workspace = true, optional = true }
 ec-gpu-gen = { workspace = true, optional = true }
-ff ={ workspace = true }
+ff = { workspace = true }
 generic-array = { workspace = true }
 pasta_curves = { workspace = true, features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -80,13 +80,13 @@ abomonation = ["dep:abomonation", "dep:abomonation_derive"]
 [workspace]
 resolver = "2"
 members = [
-  "gbench",
+    "gbench",
 ]
 
 # Dependencies that should be kept in sync through the whole workspace
 [workspace.dependencies]
 bellpepper-core = { version = "0.4.0", default-features = false }
-bellpepper = { version = "0.4.0", default-features = false }
+bellpepper = { git = "https://github.com/lurk-lab/bellpepper.git", branch = "dev" }
 blake2s_simd = "1.0.1"
 blstrs = { version = "0.7.0" }
 ff = "0.13.0"

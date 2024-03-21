@@ -34,6 +34,7 @@ where
     pattern: IOPattern,
     io_count: usize,
     poseidon: Poseidon<'a, F, A>,
+    shape_only: bool, // must be set to true if any value required for accurate witness-generation is missing.
     _c: PhantomData<C>,
 }
 
@@ -57,6 +58,7 @@ impl<'a, F: PrimeField, A: Arity<F>, CS: 'a + ConstraintSystem<F>> SpongeTrait<'
             queue: VecDeque::with_capacity(A::to_usize()),
             pattern: IOPattern(Vec::new()),
             poseidon: Poseidon::new(constants),
+            shape_only: false,
             io_count: 0,
             _c: Default::default(),
         }
@@ -101,7 +103,14 @@ impl<'a, F: PrimeField, A: Arity<F>, CS: 'a + ConstraintSystem<F>> SpongeTrait<'
     }
 
     fn set_element(&mut self, index: usize, elt: Self::Elt) {
-        self.poseidon.elements[index] = elt.val().unwrap();
+        // If `elt` has no value, we are synthesizing. `self.poseidon.elements` is used only for witness-generation, so we
+        // don't need to set in that case.
+        if let Some(f) = elt.val() {
+            self.poseidon.elements[index] = f;
+        } else {
+            // Since we failed to update the poseidon state, record that we must only be synthesizing shape.
+            self.shape_only = true;
+        }
         self.state.elements[index] = elt;
     }
 
@@ -134,6 +143,9 @@ impl<'a, F: PrimeField, A: Arity<F>, CS: 'a + ConstraintSystem<F>> SpongeTrait<'
         self.permutation_count += 1;
 
         if ns.is_witness_generator() {
+            // Do not risk generating an inaccurate witness if a missing value has tainted our tracking of the concrete
+            // state.
+            assert!(!self.shape_only);
             self.poseidon.generate_witness_into_cs(ns);
 
             for (elt, scalar) in self

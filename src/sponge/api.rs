@@ -1,9 +1,10 @@
+use ff::PrimeField;
+
 /// This module implements a variant of the 'Secure Sponge API for Field Elements':  https://hackmd.io/bHgsH6mMStCVibM_wYvb2w
 ///
 /// The API is defined by the `SpongeAPI` trait, which is implemented in terms of the `InnerSpongeAPI` trait.
 /// `Neptune` provides implementations of `InnerSpongeAPI` for both `sponge::Sponge` and `sponge_circuit::SpongeCircuit`.
-use crate::poseidon::{Arity, Poseidon, PoseidonConstants};
-use ff::PrimeField;
+use crate::poseidon::{Arity, PoseidonConstants};
 
 #[derive(Debug)]
 pub enum Error {
@@ -259,6 +260,20 @@ impl<F: PrimeField, A: Arity<F>, S: InnerSpongeAPI<F, A>> SpongeAPI<F, A> for S 
 
 #[cfg(test)]
 mod test {
+    use bellpepper::util_cs::test_shape_cs::TestShapeCS;
+    use bellpepper_core::num::AllocatedNum;
+    use bellpepper_core::test_cs::TestConstraintSystem;
+    use bellpepper_core::ConstraintSystem;
+    use blstrs::Scalar as Fr;
+    use ff::{Field, PrimeFieldBits};
+    use generic_array::typenum::U24;
+    use serde::{Deserialize, Serialize};
+
+    use crate::circuit2::Elt;
+    use crate::sponge::circuit::SpongeCircuit;
+    use crate::sponge::vanilla::Mode::Simplex;
+    use crate::sponge::vanilla::SpongeTrait;
+
     use super::*;
 
     #[test]
@@ -306,6 +321,72 @@ mod test {
                 SpongeOp::Squeeze(1),
             ]),
             0,
+        );
+    }
+
+    #[test]
+    fn test_sponge_api_multiple_cs() {
+        fn sponge_cycle<Scalar, CS: ConstraintSystem<Scalar>>(
+            cs: &mut CS,
+            elts: &[AllocatedNum<Scalar>],
+        ) -> Vec<Elt<Scalar>>
+        where
+            Scalar: PrimeField + PrimeFieldBits + Serialize + for<'de> Deserialize<'de>,
+        {
+            let constant: PoseidonConstants<Scalar, U24> = PoseidonConstants::new();
+            let mut ns = cs.namespace(|| "ns");
+            let mut sponge = SpongeCircuit::new_with_constants(&constant, Simplex);
+            let acc = &mut ns;
+            let parameter = IOPattern(vec![
+                SpongeOp::Absorb(elts.len() as u32),
+                SpongeOp::Squeeze(1u32),
+            ]);
+
+            sponge.start(parameter, None, acc);
+            SpongeAPI::absorb(
+                &mut sponge,
+                elts.len() as u32,
+                &(0..elts.len())
+                    .map(|i| Elt::Allocated(elts[i].clone()))
+                    .collect::<Vec<Elt<Scalar>>>(),
+                acc,
+            );
+            let output = SpongeAPI::squeeze(&mut sponge, 1, acc);
+            sponge.finish(acc).unwrap();
+            output
+        }
+
+        /*********************************
+         * Test absorb w/ ShapeCS
+         *********************************/
+        let mut cs: TestShapeCS<Fr> = TestShapeCS::new();
+
+        let elts = (0..10)
+            .map(|i| {
+                AllocatedNum::alloc(cs.namespace(|| format!("elt_{i}")), || Ok(Fr::ONE)).unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        // Values are `None`, we should get a None back
+        let hash = sponge_cycle(&mut cs, &elts);
+        assert!(hash[0].val().is_none());
+
+        /*********************************
+         * Test absorb w/ TestConstraintSystem
+         *********************************/
+        let mut cs: TestConstraintSystem<Fr> = TestConstraintSystem::new();
+
+        let elts = (0..10)
+            .map(|i| {
+                AllocatedNum::alloc(cs.namespace(|| format!("elt_{i}")), || Ok(Fr::ONE)).unwrap()
+            })
+            .collect::<Vec<_>>();
+
+        // We have values, we expect one in return
+        let hash = sponge_cycle(&mut cs, &elts);
+        assert_eq!(
+            "Scalar(0x4d1f7863ee494536a938bd87d761a30828eeeeebfbc160117135dc6766f6e16c)",
+            hash[0].val().unwrap().to_string()
         );
     }
 }
