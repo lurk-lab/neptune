@@ -193,7 +193,7 @@ fn round_constants<F: PrimeField>(arity: usize, strength: &Strength) -> Vec<F> {
 
     let fr_num_bits = F::NUM_BITS;
     let field_size = {
-        assert!(fr_num_bits <= u32::from(core::u16::MAX));
+        assert!(u16::try_from(fr_num_bits).is_ok());
         // It's safe to convert to u16 for compatibility with other types.
         fr_num_bits as u16
     };

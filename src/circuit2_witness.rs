@@ -85,7 +85,7 @@ where
     (aux, result)
 }
 
-impl<'a, Scalar, A> SizedWitness<Scalar> for Poseidon<'a, Scalar, A>
+impl<Scalar, A> SizedWitness<Scalar> for Poseidon<'_, Scalar, A>
 where
     Scalar: PrimeField,
     A: Arity<Scalar>,

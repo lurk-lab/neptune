@@ -10,7 +10,7 @@ use ff::PrimeField;
 /// Correct
 ///
 /// This code path implements a naive and evidently correct poseidon hash.
-
+///
 /// The returned element is the second poseidon element, the first is the arity tag.
 pub(crate) fn hash_correct<F, A>(p: &mut Poseidon<'_, F, A>) -> F
 where
@@ -93,7 +93,6 @@ where
 /// It serves as a bridge between the 'correct' and fully, statically optimized implementations.
 /// Comments reference notation also expanded in matrix.rs and help clarify the relationship between
 /// our optimizations and those described in the paper.
-
 pub(crate) fn hash_optimized_dynamic<F, A>(p: &mut Poseidon<'_, F, A>) -> F
 where
     F: PrimeField,
