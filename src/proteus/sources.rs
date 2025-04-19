@@ -123,7 +123,7 @@ fn poseidon_source(field: &str, strength: &str, derived_constants: &DerivedConst
 
 /// Returns the kernels source code for the given constants.
 ///
-/// The constants can be generated based on the the arity and the strength. The `derived_constants`
+/// The constants can be generated based on the arity and the strength. The `derived_constants`
 /// parameter is a list of tuples, where the first element contains the standard strength
 /// parameters, the second element is the strengthed one.
 fn generate_program_from_constants<F>(
