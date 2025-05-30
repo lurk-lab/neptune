@@ -98,7 +98,7 @@ where
         data
     }
 
-    /// Returns the name of the kernel that can be be called with those contants
+    /// Returns the name of the kernel that can be be called with those constants
     fn kernel_name(&self) -> String {
         let arity = A::to_usize();
         let strength = self.strength();

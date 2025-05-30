@@ -101,7 +101,7 @@ and this project adheres to [Semantic Versioning](https://book.async.rs/overview
 ## 2.6 - 2021-1-21
 - Pure OpenCL implementation of batch hashing. (https://github.com/argumentcomputer/neptune/pull/78)
 
-## 2.5 [release commited but never published to crates.io, due to authentication glitch]
+## 2.5 [release committed but never published to crates.io, due to authentication glitch]
 
 ## 2.4.0 - 2020-11-17
 
