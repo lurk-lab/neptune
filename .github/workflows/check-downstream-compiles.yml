@@ -22,10 +22,10 @@ jobs:
     env:
       RUSTFLAGS: -D warnings
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: ${{ github.workspace }}/neptune
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         repository: argumentcomputer/arecibo
         path: ${{ github.workspace }}/arecibo
@@ -47,10 +47,10 @@ jobs:
     env:
       RUSTFLAGS: -D warnings
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: ${{ github.workspace }}/neptune
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         repository: argumentcomputer/lurk-rs
         path: ${{ github.workspace }}/lurk
