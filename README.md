@@ -1,4 +1,4 @@
-# Neptune ![crates.io](https://img.shields.io/crates/v/neptune.svg) ![neptune](https://github.com/argumentcomputer/neptune/actions/workflows/rust.yml/badge.svg)[![dependency status](https://deps.rs/repo/github/argumentcomputer/neptune/status.svg)](https://deps.rs/repo/github/argumentcomputer/neptune)
+# Neptune ![crates.io](https://img.shields.io/crates/v/neptune.svg) [![neptune](https://github.com/argumentcomputer/neptune/actions/workflows/rust.yml/badge.svg)](https://github.com/lurk-lab/neptune/actions/workflows/rust.yml) [![dependency status](https://deps.rs/repo/github/argumentcomputer/neptune/status.svg)](https://deps.rs/repo/github/argumentcomputer/neptune)
 
 
 ## About
